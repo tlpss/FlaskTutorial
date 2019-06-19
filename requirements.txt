@@ -1,0 +1,6 @@
+flask==1.0.3
+flask-wtf
+flask-SQLAlchemy
+flask-migrate
+flask-login
+pytest
