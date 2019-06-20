@@ -1,8 +1,10 @@
 from flask import render_template, flash, redirect, url_for
 from flask_login import current_user, login_user, logout_user, login_required
 from server import app, db
-from server.forms import LoginForm, RegistrationForm, EditProfileForm, PostForm
+from server.forms import LoginForm, RegistrationForm, EditProfileForm, PostForm,\
+    RequestPasswordRequestForm,ResetPasswordForm
 from server.models import User,Post
+from server.email import send_password_reset_email
 from flask import request
 from werkzeug.urls import url_parse
 from datetime import  datetime
@@ -142,3 +144,48 @@ def unfollow(username):
     db.session.commit()
     flash('You are not following {}.'.format(username))
     return redirect(url_for('user', username=username))
+
+@app.route('/reset_password_request', methods = ['GET','POST'])
+def reset_password_request():
+    if current_user.is_authenticated:
+        return redirect(url_for('index'))
+    form = RequestPasswordRequestForm()
+    if form.validate_on_submit():
+        user = User.query.filter_by(email = form.email.data).first()
+        if user:
+            send_password_reset_email(user)
+            flash('mail sent')
+            return redirect(url_for('login'))
+        else:
+            flash('unknown email')
+            form.email.data = ''
+
+    return render_template('reset_password_request.html',title='Reset Password', form=form)
+
+@app.route('/reset_password/<token>', methods = ['GET','POST'])
+def reset_password(token):
+    if current_user.is_authenticated:
+        return redirect(url_for('index'))
+    user = User.verify_reset_password_token(token)
+    if not user:
+        return redirect(url_for('index'))
+    form = ResetPasswordForm()
+    if form.validate_on_submit():
+        user.set_password(form.password.data)
+        db.session.commit()
+        flash('reset successful')
+        return redirect(url_for('login'))
+    return render_template('reset_password.html', form =form)
+
+
+
+
+# @app.route('/send-mail/')
+# def send_mail():
+#     msg = mail.send_message(
+#         'Send Mail tutorial!',
+#         sender='thomas17.lips@gmail.ocm',
+#         recipients=['thomas.lips@ugent.be'],
+#         body="Congratulations you've succeeded!"
+#     )
+#     return 'Mail sent'

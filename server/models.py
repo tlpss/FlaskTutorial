@@ -1,8 +1,10 @@
-from server import db, login
+from server import db, login, app
 from datetime import datetime
 from werkzeug.security import generate_password_hash, check_password_hash
 from flask_login import UserMixin
 from hashlib import md5
+import jwt
+from time import time
 
 
 # N-M relation
@@ -36,9 +38,6 @@ class User(UserMixin, db.Model):
     #          : lazy -> how/when is query executed
     #          : options -> DYNAMIC (equivalent) = query is executed at runtime -> allows filters etc
     #          :         -> SELECT, JOINED, SUBQUERY
-
-
-
     def __repr__(self):
         return f'<User {self.username}>'
 
@@ -76,6 +75,22 @@ class User(UserMixin, db.Model):
         #return (followed_posts.union(own_posts)).order_by(Post.timestamp.desc())
 
     #TODO: figure out how to filter before joining -> faster query!!
+
+    def get_reset_password_token(self, expires_in=600):
+        return jwt.encode(
+            {'reset_password': self.id, 'exp': time() + expires_in},
+            app.config['SECRET_KEY'], algorithm='HS256').decode('utf-8')
+        # exp : if link not valid anymore -> ignore
+
+    @staticmethod
+    def verify_reset_password_token(token):
+        try:
+            id = jwt.decode(token, app.config['SECRET_KEY'],
+                            algorithms=['HS256'])['reset_password']
+        except:
+            # TODO: log this failure-> security issue?
+            return
+        return User.query.get(id)
 
 # connection between DB and flask-login
 @login.user_loader
