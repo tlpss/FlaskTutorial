@@ -4,5 +4,6 @@ flask-SQLAlchemy
 flask-migrate
 flask-login
 flask-mail
+flask-bootstrap
 pytest
 pyjwt
