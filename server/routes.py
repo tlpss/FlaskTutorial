@@ -142,7 +142,7 @@ def unfollow(username):
         return redirect(url_for('user', username=username))
     current_user.unfollow(user)
     db.session.commit()
-    flash('You are not following {}.'.format(username))
+    flash(_('You are not following %(user)s', user = username))
     return redirect(url_for('user', username=username))
 
 @app.route('/reset_password_request', methods = ['GET','POST'])
@@ -154,10 +154,10 @@ def reset_password_request():
         user = User.query.filter_by(email = form.email.data).first()
         if user:
             send_password_reset_email(user)
-            flash('mail sent')
+            flash(_('mail sent'))
             return redirect(url_for('login'))
         else:
-            flash('unknown email')
+            flash(_('unknown email'))
             form.email.data = ''
 
     return render_template('reset_password_request.html',title='Reset Password', form=form)

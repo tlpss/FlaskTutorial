@@ -11,12 +11,22 @@ class Config(object):
     SQLALCHEMY_ECHO = False # shows all SQL translations
     """MAIL"""
     # settings not present => no mail (as there are no backup values)
-    MAIL_SERVER = os.environ.get('MAIL_SERVER')
-    MAIL_PORT = int(os.environ.get('MAIL_PORT') or 25)
-    MAIL_USE_TLS = os.environ.get('MAIL_USE_TLS') is not None
-    MAIL_USERNAME = os.environ.get('MAIL_USERNAME')
-    MAIL_PASSWORD = os.environ.get('MAIL_PASSWORD')
-    ADMINS = []
+    # MAIL_SERVER = os.environ.get('MAIL_SERVER')
+    # MAIL_PORT = int(os.environ.get('MAIL_PORT') or 25)
+    # MAIL_USE_TLS = os.environ.get('MAIL_USE_TLS') is not None
+    # MAIL_USERNAME = os.environ.get('MAIL_USERNAME')
+    # MAIL_PASSWORD = os.environ.get('MAIL_PASSWORD')
+    # ADMINS = []
+    MAIL_SERVER = 'smtp.gmail.com'
+    MAIL_PORT = '465'
+    MAIL_USE_SSL = True
+    MAIL_USE_TLS = False
+    MAIL_USERNAME = 'thomas17.lips@gmail.com'
+    MAIL_PASSWORD = 'coaellhggwaemfbe' # app password!
+    ADMINS = ['thomas17.lips@gmail.com']
 
     """PAGINATION"""
     POSTS_PER_PAGE = 3
+
+    """LANGUAGES"""
+    LANGUAGES = ['en', 'nl']

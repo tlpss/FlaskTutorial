@@ -1,6 +1,6 @@
 from os.path import dirname
 
-from flask import Flask
+from flask import Flask, request
 from config import Config
 from flask_sqlalchemy import SQLAlchemy
 from flask_migrate import Migrate
@@ -8,6 +8,7 @@ from flask_login import LoginManager
 from flask_mail import Mail
 from flask_bootstrap import Bootstrap
 from flask_moment import Moment
+from flask_babel import Babel
 import logging
 from logging.handlers import  SMTPHandler, RotatingFileHandler
 import os
@@ -27,12 +28,17 @@ login.login_view = 'login' # so that flask-login can redirect on access of prote
 mail = Mail(app)
 bootstrap = Bootstrap(app)
 moment = Moment(app)
-
+babel = Babel(app)
 # route imports at the bottom to avoid circular dependencies
 
 from server import routes, models, errors
 
+# response language
+@babel.localeselector #gets called at every request
+def get_locale():
+    #return request.accept_languages.best_match(app.config['LANGUAGES']) # gets list of languages and weights and select
 
+    return 'nl' #DEBUGGING #TODO: reset to normal usage
 # error handling
 
 if not app.debug:

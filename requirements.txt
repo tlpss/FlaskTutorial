@@ -6,5 +6,6 @@ flask-login
 flask-mail
 flask-bootstrap
 flask-moment
+flask-babel
 pytest
 pyjwt
